@@ -1,0 +1,1265 @@
+﻿<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Гаухардың ұзату тойына шақыру</title>
+  <style>
+    :root {
+      --bg: #f7e3d8;
+      --paper: rgba(255, 249, 240, 0.9);
+      --ink: #3f302b;
+      --muted: #7a6258;
+      --gold: #b8873b;
+      --rose: #c78f8a;
+      --green: #6f815d;
+      --line: rgba(184, 135, 59, 0.42);
+      --shadow: rgba(72, 45, 35, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 28rem),
+        #211a18;
+      color: var(--ink);
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page {
+      width: min(430px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 4%, rgba(255, 255, 255, 0.9), transparent 24rem),
+        linear-gradient(160deg, #fff7ef 0%, #f3d4c7 48%, #d6aa97 100%);
+      box-shadow: 0 0 70px rgba(0, 0, 0, 0.38);
+      animation: pageGlow 900ms ease both;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      place-items: end center;
+      padding: 18px 12px 18px;
+      background:
+        linear-gradient(180deg, rgba(26, 20, 18, 0) 0%, rgba(26, 20, 18, 0.08) 34%, rgba(26, 20, 18, 0.72) 100%),
+        url("assets/images/hero-gaukhar.jpg") 58% top / cover no-repeat;
+      isolation: isolate;
+      animation: heroBreath 16s ease-in-out infinite alternate;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.38);
+      filter: blur(1px);
+      z-index: -2;
+    }
+
+    .hero::before {
+      mix-blend-mode: screen;
+    }
+
+    .hero::before {
+      width: 360px;
+      height: 360px;
+      left: -160px;
+      top: 12vh;
+    }
+
+    .hero::after {
+      width: 420px;
+      height: 420px;
+      right: -190px;
+      bottom: 6vh;
+    }
+
+    .petals {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .petals span {
+      position: absolute;
+      width: 16px;
+      height: 28px;
+      border-radius: 80% 10% 80% 10%;
+      background: linear-gradient(135deg, rgba(255, 225, 218, 0.92), rgba(195, 105, 105, 0.58));
+      opacity: 0.62;
+      transform: rotate(var(--r));
+      animation: petalFall var(--d) linear infinite;
+      animation-delay: var(--delay);
+    }
+
+    .petals span:nth-child(1) { left: 10%; top: -12%; --r: 20deg; --d: 11s; --delay: -2s; }
+    .petals span:nth-child(2) { left: 27%; top: -18%; --r: 82deg; --d: 13s; --delay: -7s; }
+    .petals span:nth-child(3) { left: 52%; top: -14%; --r: 140deg; --d: 10s; --delay: -4s; }
+    .petals span:nth-child(4) { left: 73%; top: -20%; --r: 45deg; --d: 14s; --delay: -1s; }
+    .petals span:nth-child(5) { left: 86%; top: -16%; --r: 108deg; --d: 12s; --delay: -6s; }
+
+    .invite-shell {
+      width: 100%;
+      min-height: auto;
+      position: relative;
+      justify-self: center;
+      display: grid;
+      align-content: center;
+      gap: 12px;
+      padding: 16px 14px 15px;
+      margin-left: 0;
+      text-align: center;
+      background:
+        linear-gradient(180deg, rgba(35, 27, 24, 0.18), rgba(35, 27, 24, 0.38)),
+        linear-gradient(180deg, rgba(255, 247, 236, 0.22), rgba(255, 247, 236, 0.08));
+      border: 1px solid rgba(255, 255, 255, 0.54);
+      border-radius: 12px;
+      box-shadow: 0 28px 64px rgba(18, 12, 10, 0.36);
+      backdrop-filter: blur(4px);
+      animation: riseIn 900ms 120ms ease both;
+    }
+
+    .invite-shell::before {
+      content: "";
+      position: absolute;
+      inset: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+      pointer-events: none;
+      animation: borderGlow 3.6s ease-in-out infinite;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: #fff9ef;
+      font-size: clamp(11px, 3.1vw, 13px);
+      letter-spacing: 0.1em;
+      line-height: 1.5;
+      text-transform: uppercase;
+      text-shadow: 0 2px 12px rgba(25, 18, 15, 0.62);
+      animation: softDrop 850ms 250ms ease both;
+    }
+
+    .invite-card {
+      padding: 18px 12px 16px;
+      background:
+        linear-gradient(180deg, rgba(255, 250, 242, 0.38), rgba(255, 250, 242, 0.18));
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      border-radius: 10px;
+      box-shadow: none;
+      backdrop-filter: blur(2px);
+      animation: softDrop 900ms 380ms ease both;
+    }
+
+    .label {
+      margin: 0 0 12px;
+      color: var(--gold);
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 10px rgba(255, 248, 238, 0.5);
+      animation: goldPulse 3.4s ease-in-out infinite;
+    }
+
+    h1 {
+      margin: 0;
+      color: #fff8ed;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(56px, 18vw, 74px);
+      font-weight: 400;
+      line-height: 0.95;
+      text-shadow: 0 3px 20px rgba(24, 16, 13, 0.72);
+      animation: nameReveal 1.2s 520ms ease both;
+    }
+
+    .divider {
+      width: 96px;
+      height: 1px;
+      margin: 16px auto;
+      background: linear-gradient(90deg, transparent, #f1d7a1, transparent);
+      transform-origin: center;
+      animation: lineBloom 1.2s 680ms ease both, shimmerLine 3.8s 1.9s ease-in-out infinite;
+    }
+
+    .message {
+      margin: 0 auto;
+      max-width: 340px;
+      color: #fff8ef;
+      font-size: clamp(14px, 3.7vw, 15px);
+      line-height: 1.58;
+      text-shadow: 0 2px 14px rgba(24, 16, 13, 0.72);
+      animation: softDrop 900ms 720ms ease both;
+    }
+
+    .details {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+      color: #fff8ef;
+      font-size: 14px;
+      line-height: 1.45;
+      text-shadow: 0 2px 14px rgba(24, 16, 13, 0.7);
+      animation: softDrop 900ms 820ms ease both;
+    }
+
+    .details span,
+    .section-kicker {
+      color: var(--gold);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .hero .details span,
+    .hero .time-box span,
+    .hero .label {
+      color: #f3d39b;
+      text-shadow: 0 2px 10px rgba(24, 16, 13, 0.68);
+    }
+
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .time-box {
+      min-width: 0;
+      padding: 9px 4px;
+      border: 1px solid rgba(255, 235, 190, 0.36);
+      border-radius: 8px;
+      background: rgba(255, 250, 242, 0.32);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+      animation: timeFloat 3s ease-in-out infinite;
+    }
+
+    .time-box:nth-child(2) { animation-delay: 120ms; }
+    .time-box:nth-child(3) { animation-delay: 240ms; }
+    .time-box:nth-child(4) { animation-delay: 360ms; }
+
+    .time-box strong {
+      display: block;
+      color: #fff8ef;
+      font-size: clamp(18px, 5.3vw, 22px);
+      line-height: 1.05;
+      text-shadow: 0 2px 10px rgba(24, 16, 13, 0.62);
+    }
+
+    .time-box span {
+      display: block;
+      margin-top: 5px;
+      color: var(--gold);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .parents {
+      color: #fff9ef;
+      font-size: 15px;
+      line-height: 1.5;
+      text-shadow: 0 2px 12px rgba(25, 18, 15, 0.68);
+      animation: softDrop 900ms 960ms ease both;
+    }
+
+    .parents strong {
+      display: block;
+      margin-top: 4px;
+      color: #fff9ef;
+      font-size: clamp(18px, 5vw, 21px);
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 11px 16px;
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      background: var(--gold);
+      color: #fffdf8;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(118, 79, 34, 0.18);
+      overflow: hidden;
+      position: relative;
+      transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: -40% auto -40% -55%;
+      width: 38%;
+      transform: skewX(-18deg);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+      animation: buttonShine 4.8s ease-in-out infinite;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: #a97932;
+      box-shadow: 0 14px 30px rgba(118, 79, 34, 0.24);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .btn.secondary {
+      background: rgba(255, 250, 244, 0.82);
+      color: var(--ink);
+    }
+
+    main {
+      display: grid;
+      gap: 10px;
+      width: calc(100% - 20px);
+      max-width: 410px;
+      margin: 0 auto;
+      padding: 22px 0 58px;
+    }
+
+    section {
+      width: 100%;
+      min-width: 0;
+      padding: 28px 0;
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+
+    section + section {
+      border-top: 1px solid rgba(184, 135, 59, 0.16);
+    }
+
+    section.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-title {
+      margin: 8px 0 18px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 9vw, 40px);
+      font-weight: 400;
+      line-height: 1.05;
+      text-align: center;
+      color: #42302b;
+    }
+
+    .section-lead {
+      max-width: 650px;
+      width: 100%;
+      margin: 0 auto 18px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .gallery-window {
+      position: relative;
+      width: min(760px, 100%);
+      max-width: 100%;
+      aspect-ratio: 9 / 13;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.64);
+      border-radius: 12px;
+      box-shadow: 0 22px 50px rgba(62, 42, 34, 0.26);
+      background: #fff8ef;
+      animation: galleryFloat 5.6s ease-in-out infinite;
+    }
+
+    .gallery-window::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.48);
+      border-radius: 9px;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .gallery-track {
+      height: 100%;
+      display: flex;
+      animation: slidePhotos 25s infinite;
+    }
+
+    .photo {
+      position: relative;
+      min-width: 100%;
+      display: grid;
+      place-items: end center;
+      padding: 34px;
+      overflow: hidden;
+      color: #fffdf9;
+      text-align: center;
+      background-size: cover;
+      background-position: center;
+      animation: photoDrift 25s ease-in-out infinite;
+    }
+
+    .photo::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 38%, rgba(52, 34, 29, 0.64));
+    }
+
+    .photo.one {
+      background-image: url("assets/images/gallery-1.jpg");
+    }
+
+    .photo.two {
+      background-image: url("assets/images/gallery-2.jpg");
+    }
+
+    .photo.three {
+      background-image: url("assets/images/gallery-3.jpg");
+    }
+
+    .photo.four {
+      background-image: url("assets/images/gallery-4.jpg");
+    }
+
+    .photo.five {
+      background-image: url("assets/images/gallery-5.jpg");
+    }
+
+    .photo p {
+      position: relative;
+      z-index: 1;
+      max-width: 440px;
+      margin: 0;
+      font-size: clamp(22px, 7vw, 34px);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.2;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .location {
+      display: grid;
+      gap: 18px;
+      align-items: center;
+      grid-template-columns: 1fr;
+      min-width: 0;
+    }
+
+    .address-copy {
+      display: grid;
+      justify-items: center;
+      text-align: center;
+      padding: 4px 4px 2px;
+    }
+
+    .address-copy .section-kicker {
+      margin-bottom: 6px;
+    }
+
+    .address-copy .section-title {
+      max-width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+      color: #44302c;
+      font-size: clamp(34px, 10vw, 46px);
+      line-height: 1.08;
+    }
+
+    .map-panel,
+    .form-panel,
+    .list-panel {
+      min-width: 0;
+      padding: 20px;
+      background:
+        linear-gradient(180deg, rgba(255, 250, 244, 0.88), rgba(255, 245, 236, 0.72));
+      border: 1px solid rgba(255, 255, 255, 0.82);
+      border-radius: 12px;
+      box-shadow: 0 16px 36px rgba(75, 51, 42, 0.13);
+      backdrop-filter: blur(8px);
+      transition: transform 260ms ease, box-shadow 260ms ease;
+    }
+
+    .map-panel:hover,
+    .form-panel:hover,
+    .list-panel:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 44px rgba(75, 51, 42, 0.18);
+    }
+
+    .map-visual {
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px) 0 0 / 44px 44px,
+        linear-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 1px) 0 0 / 44px 44px,
+        linear-gradient(135deg, #f5dacd, #d1b092);
+      color: var(--ink);
+      text-align: center;
+    }
+
+    .pin {
+      width: 74px;
+      height: 74px;
+      margin: 0 auto 14px;
+      border-radius: 50% 50% 50% 0;
+      background: var(--gold);
+      transform: rotate(-45deg);
+      box-shadow: 0 8px 20px rgba(89, 54, 27, 0.24);
+      animation: pinBounce 2.6s ease-in-out infinite;
+    }
+
+    .pin::after {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      margin: 25px;
+      border-radius: 50%;
+      background: #fff7ec;
+    }
+
+    .map-visual strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1.3;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(136, 103, 72, 0.28);
+      border-radius: 10px;
+      padding: 12px 13px;
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--ink);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(184, 135, 59, 0.15);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .forms {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    .entries {
+      position: relative;
+      display: block;
+      min-height: 178px;
+      margin-top: 18px;
+      overflow: hidden;
+    }
+
+    .entry {
+      position: relative;
+      padding: 18px 16px 16px 44px;
+      border: 1px solid rgba(184, 135, 59, 0.2);
+      border-radius: 12px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(255, 248, 238, 0.52));
+      color: var(--ink);
+      line-height: 1.45;
+      box-shadow: 0 12px 26px rgba(75, 51, 42, 0.1);
+      animation: entryIn 420ms ease both;
+    }
+
+    .entries.is-slider .entry {
+      display: none;
+    }
+
+    .entries.is-slider .entry.active {
+      display: block;
+      animation: wishSlideIn 650ms ease both;
+    }
+
+    .entry::before {
+      content: "“";
+      position: absolute;
+      left: 14px;
+      top: 6px;
+      color: rgba(184, 135, 59, 0.48);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 54px;
+      line-height: 1;
+    }
+
+    .entry .wish-text {
+      display: block;
+      color: #493832;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .entry strong {
+      display: block;
+      margin-top: 10px;
+      color: var(--gold);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-align: right;
+    }
+
+    .entry small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+    }
+
+    .empty {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .wish-dots {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .wish-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(184, 135, 59, 0.28);
+      transition: width 220ms ease, background 220ms ease;
+    }
+
+    .wish-dot.active {
+      width: 20px;
+      background: var(--gold);
+    }
+
+    .music-toggle {
+      position: fixed;
+      right: max(14px, calc((100vw - 430px) / 2 + 14px));
+      bottom: 14px;
+      z-index: 10;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0 13px;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+    }
+
+    .music-toggle.error {
+      background: #8e4c42;
+      border-color: #8e4c42;
+    }
+
+    @keyframes petalFall {
+      0% { transform: translate3d(0, -30px, 0) rotate(var(--r)); opacity: 0; }
+      12% { opacity: 0.62; }
+      100% { transform: translate3d(42px, 115vh, 0) rotate(calc(var(--r) + 260deg)); opacity: 0; }
+    }
+
+    @keyframes pageGlow {
+      from { opacity: 0; transform: scale(0.985); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes heroBreath {
+      from { background-position: center top; }
+      to { background-position: center 28%; }
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(28px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes softDrop {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes nameReveal {
+      from { opacity: 0; transform: translateY(12px) scale(0.96); filter: blur(2px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    @keyframes borderGlow {
+      0%, 100% { box-shadow: inset 0 0 0 rgba(255, 255, 255, 0); opacity: 0.72; }
+      50% { box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.26); opacity: 1; }
+    }
+
+    @keyframes goldPulse {
+      0%, 100% { opacity: 0.78; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes lineBloom {
+      from { transform: scaleX(0); opacity: 0; }
+      to { transform: scaleX(1); opacity: 1; }
+    }
+
+    @keyframes shimmerLine {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.45); }
+    }
+
+    @keyframes timeFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes buttonShine {
+      0%, 42% { left: -55%; }
+      55%, 100% { left: 115%; }
+    }
+
+    @keyframes galleryFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    @keyframes photoDrift {
+      0%, 100% { background-position: center; }
+      50% { background-position: center 42%; }
+    }
+
+    @keyframes pinBounce {
+      0%, 100% { transform: rotate(-45deg) translate(0, 0); }
+      50% { transform: rotate(-45deg) translate(4px, -4px); }
+    }
+
+    @keyframes entryIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes wishSlideIn {
+      from { opacity: 0; transform: translateX(18px) scale(0.98); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    @keyframes slidePhotos {
+      0%, 15% { transform: translateX(0); }
+      20%, 35% { transform: translateX(-100%); }
+      40%, 55% { transform: translateX(-200%); }
+      60%, 75% { transform: translateX(-300%); }
+      80%, 95% { transform: translateX(-400%); }
+      100% { transform: translateX(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 1ms !important;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .location,
+      .forms {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .hero {
+        padding: 14px 10px 16px;
+      }
+
+      .invite-shell {
+        min-height: auto;
+        width: 100%;
+        border-radius: 12px;
+        padding: 15px 13px 14px;
+      }
+
+      main {
+        width: calc(100% - 20px);
+        padding-top: 24px;
+      }
+
+      .message {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="petals" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="invite-shell">
+        <p class="eyebrow">Құрметті ағайын-туыс,<br>құда-жекжат, дос-жарандар!</p>
+
+        <div class="invite-card">
+          <p class="label">Ұзату той</p>
+          <h1>Гаухар</h1>
+          <div class="divider" aria-hidden="true"></div>
+          <p class="message">
+            Сіздерді аяулы қызымыз Гаухардың ұзату тойына арналған ақ дастарханымыздың
+            қадірлі қонағы болуға шақырамыз.
+          </p>
+          <div class="details">
+            <div><span>Мекенжай</span><br>Ғайса Аязбаев көшесі, 31</div>
+            <div><span>Уақыты</span><br>Шілде , 04 , 2026<br>13:00 сағат</div>
+          </div>
+          <div class="countdown" aria-label="Тойға дейін қалған уақыт">
+            <div class="time-box"><strong id="days">0</strong><span>күн</span></div>
+            <div class="time-box"><strong id="hours">0</strong><span>сағат</span></div>
+            <div class="time-box"><strong id="minutes">0</strong><span>минут</span></div>
+            <div class="time-box"><strong id="seconds">0</strong><span>секунд</span></div>
+          </div>
+        </div>
+
+        <div class="parents">
+          Ата-анасы:
+          <strong>Мынжасар, Динагүл</strong>
+        </div>
+
+        <div class="actions">
+          <a class="btn" href="#rsvp">Келуімді белгілеу</a>
+          <a class="btn secondary" href="https://2gis.kz/ustkam/geo/12807747095527103" target="_blank" rel="noopener">2GIS-те ашу</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section aria-labelledby="gallery-title">
+        <p class="section-kicker" style="text-align:center;">Естелік сәттер</p>
+        <h2 class="section-title" id="gallery-title">Фотолар</h2>
+        <div class="gallery-window">
+          <div class="gallery-track">
+            <div class="photo one"><p>Гаухардың ұзату тойына шақыру</p></div>
+            <div class="photo two"><p>Ақ тілек пен әсем кеш</p></div>
+            <div class="photo three"><p>Қуанышқа толы күн</p></div>
+            <div class="photo four"><p>Төрімізден орын алыңыз</p></div>
+            <div class="photo five"><p>Қуанышымызға ортақ болыңыз</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="address-title">
+        <div class="location">
+          <div class="address-copy">
+            <p class="section-kicker">Мекенжай</p>
+            <h2 class="section-title" id="address-title">Ғайса Аязбаев көшесі, 31</h2>
+            <a class="btn" href="https://2gis.kz/ustkam/geo/12807747095527103" target="_blank" rel="noopener">2GIS қосымшасында ашу</a>
+          </div>
+          <div class="map-panel">
+            <div class="map-visual">
+              <div>
+                <div class="pin" aria-hidden="true"></div>
+                <strong>Ғайса Аязбаев көшесі, 31</strong>
+                <span>2GIS арқылы бағыт алу</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="rsvp" aria-labelledby="rsvp-title">
+        <p class="section-kicker" style="text-align:center;">Қонақтар жауабы</p>
+        <h2 class="section-title" id="rsvp-title">Келесіз бе?</h2>
+        <div class="forms">
+          <form class="form-panel form-grid" id="guestForm">
+            <div class="two-col">
+              <label>Аты-жөніңіз
+                <input name="name" autocomplete="name" required placeholder="Мысалы: Айдана Ермекқызы">
+              </label>
+              <label>Келесіз бе?
+                <select name="coming" required>
+                  <option value="Келемін">Келемін</option>
+                  <option value="Келе алмаймын">Келе алмаймын</option>
+                  <option value="Әлі нақты емес">Әлі нақты емес</option>
+                </select>
+              </label>
+            </div>
+            <div class="two-col">
+              <label>Кіммен келесіз?
+                <input name="withWhom" placeholder="Жалғыз / жұбайыммен / отбасыммен">
+              </label>
+              <label>Адам саны
+                <input name="count" type="number" min="1" max="20" value="1">
+              </label>
+            </div>
+            <label>Тілек
+              <textarea name="wish" placeholder="Жылы тілегіңізді жазыңыз"></textarea>
+            </label>
+            <button class="btn" type="submit">Жауап жіберу</button>
+          </form>
+
+          <div class="list-panel">
+            <p class="section-kicker">Тілектер</p>
+            <h3 style="margin:8px 0 12px;font-size:24px;">Жазылған тілектер</h3>
+            <div class="actions" style="justify-content:flex-start;margin-bottom:12px;">
+              <button class="btn secondary" type="button" id="downloadCsv">Тізімді жүктеу</button>
+              <button class="btn secondary" type="button" id="clearList">Тізімді тазалау</button>
+            </div>
+            <div class="entries" id="entries"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <audio id="bgMusic" preload="auto" loop>
+    <source src="assets/audio/music.mp3" type="audio/mpeg">
+  </audio>
+  <button class="btn music-toggle" type="button" id="musicToggle" aria-label="Музыканы қосу немесе өшіру">Әуен қосу</button>
+
+  <script>
+    const storageKey = "gaukhar-uzatu-guests-v2";
+    const form = document.querySelector("#guestForm");
+    const entries = document.querySelector("#entries");
+    const downloadCsv = document.querySelector("#downloadCsv");
+    const clearList = document.querySelector("#clearList");
+    const musicToggle = document.querySelector("#musicToggle");
+    const bgMusic = document.querySelector("#bgMusic");
+    const sharedWishesEndpoint = "https://script.google.com/macros/s/AKfycbzjL68GQXcMgIXGK_Icf6VzrFDXFSLBC6buk_sZL_htwgluHLmpWlrSCfp6J8ewuk9_9g/exec";
+    let guestsCache = [];
+    let wishIndex = 0;
+    let wishTimer;
+    const eventDate = new Date("2026-07-04T13:00:00+05:00");
+    const countdownNodes = {
+      days: document.querySelector("#days"),
+      hours: document.querySelector("#hours"),
+      minutes: document.querySelector("#minutes"),
+      seconds: document.querySelector("#seconds")
+    };
+
+    function getLocalGuests() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLocalGuests(guests) {
+      localStorage.setItem(storageKey, JSON.stringify(guests));
+    }
+
+    async function loadGuests() {
+      if (!sharedWishesEndpoint) {
+        guestsCache = getLocalGuests();
+        return guestsCache;
+      }
+
+      try {
+        const response = await fetch(`${sharedWishesEndpoint}?action=list&t=${Date.now()}`);
+        const data = await response.json();
+        guestsCache = Array.isArray(data) ? data : data.guests || [];
+        return guestsCache;
+      } catch {
+        guestsCache = getLocalGuests();
+        return guestsCache;
+      }
+    }
+
+    async function saveGuest(guest) {
+      if (!sharedWishesEndpoint) {
+        const guests = getLocalGuests();
+        guests.unshift(guest);
+        saveLocalGuests(guests);
+        guestsCache = guests;
+        return;
+      }
+
+      await fetch(sharedWishesEndpoint, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "add", guest })
+      });
+      await loadGuests();
+    }
+
+    async function clearGuests() {
+      if (!sharedWishesEndpoint) {
+        saveLocalGuests([]);
+        guestsCache = [];
+        return;
+      }
+
+      await fetch(sharedWishesEndpoint, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "clear" })
+      });
+      guestsCache = [];
+    }
+
+    async function renderGuests() {
+      const guests = await loadGuests();
+      entries.innerHTML = "";
+      if (!guests.length) {
+        clearInterval(wishTimer);
+        entries.classList.remove("is-slider");
+        entries.innerHTML = '<p class="empty">Әзірге жауап жоқ. Бірінші қонақ жауап қалдырғанда осы жерде көрінеді.</p>';
+        return;
+      }
+
+      wishIndex = wishIndex % guests.length;
+      entries.classList.toggle("is-slider", guests.length > 1);
+      guests.forEach((guest, index) => {
+        const item = document.createElement("div");
+        item.className = `entry${index === wishIndex % guests.length ? " active" : ""}`;
+        item.innerHTML = `
+          <span class="wish-text">${escapeHtml(guest.wish || "Тілек жазылмаған")}</span>
+          <strong>${escapeHtml(guest.name)}</strong>
+        `;
+        entries.appendChild(item);
+      });
+
+      if (guests.length > 1) {
+        const dots = document.createElement("div");
+        dots.className = "wish-dots";
+        guests.forEach((_, index) => {
+          const dot = document.createElement("span");
+          dot.className = `wish-dot${index === wishIndex % guests.length ? " active" : ""}`;
+          dots.appendChild(dot);
+        });
+        entries.appendChild(dots);
+        startWishSlider(guests.length);
+      } else {
+        clearInterval(wishTimer);
+      }
+    }
+
+    function startWishSlider(count) {
+      clearInterval(wishTimer);
+      wishTimer = setInterval(() => {
+        wishIndex = (wishIndex + 1) % count;
+        const cards = entries.querySelectorAll(".entry");
+        const dots = entries.querySelectorAll(".wish-dot");
+        cards.forEach((card, index) => card.classList.toggle("active", index === wishIndex));
+        dots.forEach((dot, index) => dot.classList.toggle("active", index === wishIndex));
+      }, 5000);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const guest = {
+        name: data.get("name").trim(),
+        coming: data.get("coming"),
+        withWhom: data.get("withWhom").trim(),
+        count: data.get("count"),
+        wish: data.get("wish").trim(),
+        date: new Date().toLocaleString("kk-KZ")
+      };
+      await saveGuest(guest);
+      form.reset();
+      form.elements.count.value = "1";
+      renderGuests();
+    });
+
+    downloadCsv.addEventListener("click", () => {
+      const guests = guestsCache;
+      const rows = [
+        ["Аты-жөні", "Келу жауабы", "Кіммен келеді", "Адам саны", "Тілек", "Жауап уақыты"],
+        ...guests.map((guest) => [guest.name, guest.coming, guest.withWhom, guest.count, guest.wish, guest.date])
+      ];
+      const csv = rows.map((row) => row.map((cell) => `"${String(cell || "").replaceAll('"', '""')}"`).join(",")).join("\n");
+      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "gaukhar-uzatu-qonaqtar.csv";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    clearList.addEventListener("click", async () => {
+      if (confirm("Тізімді тазалайсыз ба?")) {
+        await clearGuests();
+        renderGuests();
+      }
+    });
+
+    function updateCountdown() {
+      const diff = Math.max(0, eventDate.getTime() - Date.now());
+      const totalSeconds = Math.floor(diff / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      countdownNodes.days.textContent = days;
+      countdownNodes.hours.textContent = String(hours).padStart(2, "0");
+      countdownNodes.minutes.textContent = String(minutes).padStart(2, "0");
+      countdownNodes.seconds.textContent = String(seconds).padStart(2, "0");
+    }
+
+    let isPlaying = false;
+
+    async function startMusic() {
+      if (isPlaying) return;
+      musicToggle.classList.remove("error");
+      try {
+        await bgMusic.play();
+        isPlaying = true;
+        musicToggle.textContent = "Әуен өшіру";
+      } catch (error) {
+        if (bgMusic.error) {
+          musicToggle.textContent = "Ән файлы жоқ";
+          musicToggle.classList.add("error");
+        } else {
+          musicToggle.textContent = "Әуен қосу";
+        }
+      }
+    }
+
+    function startMusicOnce() {
+      if (isPlaying) return;
+      startMusic();
+    }
+
+    function stopMusic() {
+      isPlaying = false;
+      musicToggle.textContent = "Әуен қосу";
+      musicToggle.classList.remove("error");
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+    }
+
+    bgMusic.addEventListener("error", () => {
+      if (!isPlaying) {
+        musicToggle.textContent = "Ән файлы жоқ";
+        musicToggle.classList.add("error");
+      }
+    });
+
+    function revealSections() {
+      const sections = document.querySelectorAll("main section");
+      if (!("IntersectionObserver" in window)) {
+        sections.forEach((section) => section.classList.add("is-visible"));
+        return;
+      }
+
+      const observer = new IntersectionObserver((items) => {
+        items.forEach((item) => {
+          if (item.isIntersecting) {
+            item.target.classList.add("is-visible");
+            observer.unobserve(item.target);
+          }
+        });
+      }, { threshold: 0.18 });
+
+      sections.forEach((section) => observer.observe(section));
+    }
+
+    musicToggle.addEventListener("click", () => {
+      if (isPlaying) {
+        stopMusic();
+      } else {
+        startMusic();
+      }
+    });
+
+    window.addEventListener("load", () => {
+      renderGuests();
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+      startMusic();
+      revealSections();
+    });
+
+    document.addEventListener("click", startMusicOnce, { once: true });
+    document.addEventListener("touchstart", startMusicOnce, { once: true });
+  </script>
+</body>
+</html>
+
